@@ -1,6 +1,5 @@
 import {createRouter, createWebHistory} from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-import AudioRecorder from "@/components/AudioRecorder.vue";
 import CircularBufferDemo from "@/components/CircularBufferDemo.vue";
 import ВизуализацияХуялизация from "@/views/ВизуализацияХуялизация.vue";
 import ЗаписьХуяпись from "@/views/ЗаписьХуяпись.vue";

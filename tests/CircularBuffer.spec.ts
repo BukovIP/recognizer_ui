@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { CircularBuffer } from '@/utils/CircularBuffer'
+import { CircularBuffer } from '../src/utils/CircularBuffer'
 
 describe('CircularBuffer', () => {
     describe('Базовые операции', () => {
