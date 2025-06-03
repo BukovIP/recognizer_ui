@@ -55,11 +55,11 @@
 </template>
 
 <script lang="ts">
-import {defineComponent} from 'vue';
+import { defineComponent } from 'vue';
 
 interface AudioRecording {
     url: string;
-    blob: Blob;
+    data: string; // Base64 строка
     date: Date;
 }
 
@@ -108,13 +108,16 @@ export default defineComponent({
             if (!this.mediaRecorder) return;
 
             return new Promise<void>((resolve) => {
-                this.mediaRecorder!.onstop = () => {
-                    const audioBlob = new Blob(this.audioChunks, {type: 'audio/wav'});
+                this.mediaRecorder!.onstop = async () => {
+                    const audioBlob = new Blob(this.audioChunks, { type: 'audio/wav' });
                     const audioUrl = URL.createObjectURL(audioBlob);
+
+                    // Конвертируем Blob в Base64
+                    const base64Data = await this.blobToBase64(audioBlob);
 
                     this.addRecording({
                         url: audioUrl,
-                        blob: audioBlob,
+                        data: base64Data,
                         date: new Date()
                     });
 
@@ -128,8 +131,34 @@ export default defineComponent({
             });
         },
 
+        // Конвертация Blob в Base64
+        blobToBase64(blob: Blob): Promise<string> {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    const result = reader.result as string;
+                    resolve(result.split(',')[1]); // Убираем префикс data:audio/wav;base64,
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(blob);
+            });
+        },
+
+        // Конвертация Base64 обратно в Blob
+        base64ToBlob(base64: string, type: string): Blob {
+            const byteCharacters = atob(base64);
+            const byteNumbers = new Array(byteCharacters.length);
+
+            for (let i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+            }
+
+            const byteArray = new Uint8Array(byteNumbers);
+            return new Blob([byteArray], { type });
+        },
+
         addRecording(recording: AudioRecording) {
-            this.recordings.unshift(recording); // Добавляем в начало списка
+            this.recordings.unshift(recording);
             this.saveRecordings();
         },
 
@@ -152,23 +181,26 @@ export default defineComponent({
         },
 
         saveRecordings() {
-            // Сохраняем только метаданные, так как Blob нельзя сохранить в LocalStorage
             const recordingsData = this.recordings.map(rec => ({
-                url: rec.url,
+                data: rec.data,
                 date: rec.date.toISOString()
             }));
             localStorage.setItem('audioRecordings', JSON.stringify(recordingsData));
         },
 
-        loadRecordings() {
+        async loadRecordings() {
             const saved = localStorage.getItem('audioRecordings');
             if (saved) {
                 try {
                     const recordingsData = JSON.parse(saved);
-                    this.recordings = recordingsData.map((data: any) => ({
-                        url: data.url,
-                        blob: new Blob(),
-                        date: new Date(data.date)
+                    this.recordings = await Promise.all(recordingsData.map(async (data: any) => {
+                        const blob = this.base64ToBlob(data.data, 'audio/wav');
+                        const url = URL.createObjectURL(blob);
+                        return {
+                            url,
+                            data: data.data,
+                            date: new Date(data.date)
+                        };
                     }));
                 } catch (e) {
                     console.error('Ошибка загрузки записей:', e);
