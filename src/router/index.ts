@@ -3,6 +3,7 @@ import HomeView from '../views/HomeView.vue'
 import CircularBufferDemo from "@/components/CircularBufferDemo.vue";
 import ВизуализацияХуялизация from "@/views/ВизуализацияХуялизация.vue";
 import ЗаписьХуяпись from "@/views/ЗаписьХуяпись.vue";
+import AudioRecorder from "@/views/AudioRecorder.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -24,6 +25,11 @@ const router = createRouter({
             path: '/recording',
             name: 'recording',
             component: ЗаписьХуяпись
+        },
+        {
+            path: '/audio_recording',
+            name: 'audio_recording',
+            component: AudioRecorder
         },
         {
             path: '/visualisation',

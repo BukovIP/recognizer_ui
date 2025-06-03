@@ -7,7 +7,17 @@
 </template>
 
 <script>
+import {inject} from "vue";
+import {AudioRecordsRepository} from "@/repositories/AudioRecordsRepository.js";
+
 export default {
+    setup() {
+        const userRepo = inject < AudioRecordsRepository > ('audioRecordsRepository');
+
+        return {
+            userRepo
+        };
+    },
     data() {
         return {
             isRecording: false,
@@ -19,7 +29,7 @@ export default {
     methods: {
         async startRecording() {
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                const stream = await navigator.mediaDevices.getUserMedia({audio: true});
                 this.mediaRecorder = new MediaRecorder(stream);
                 this.audioChunks = [];
 
@@ -28,7 +38,7 @@ export default {
                 };
 
                 this.mediaRecorder.onstop = () => {
-                    const audioBlob = new Blob(this.audioChunks, { type: 'audio/wav' });
+                    const audioBlob = new Blob(this.audioChunks, {type: 'audio/wav'});
                     this.audioUrl = URL.createObjectURL(audioBlob);
                     stream.getTracks().forEach(track => track.stop());
                 };

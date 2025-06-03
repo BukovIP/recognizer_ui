@@ -12,6 +12,7 @@ import {RouterLink, RouterView} from 'vue-router'
                 <RouterLink to="/about">About</RouterLink>
 
                 <RouterLink to="/recording">recording</RouterLink>
+                <RouterLink to="/audio_recording">audio_recording</RouterLink>
                 <RouterLink to="/visulisation">visulisation</RouterLink>
                 <RouterLink to="/circular_buffer_demo">buffer</RouterLink>
             </nav>
