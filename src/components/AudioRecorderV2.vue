@@ -55,7 +55,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import {defineComponent} from 'vue';
 
 interface AudioRecording {
     url: string;
@@ -109,7 +109,7 @@ export default defineComponent({
 
             return new Promise<void>((resolve) => {
                 this.mediaRecorder!.onstop = async () => {
-                    const audioBlob = new Blob(this.audioChunks, { type: 'audio/wav' });
+                    const audioBlob = new Blob(this.audioChunks, {type: 'audio/wav'});
                     const audioUrl = URL.createObjectURL(audioBlob);
 
                     // Конвертируем Blob в Base64
@@ -154,7 +154,7 @@ export default defineComponent({
             }
 
             const byteArray = new Uint8Array(byteNumbers);
-            return new Blob([byteArray], { type });
+            return new Blob([byteArray], {type});
         },
 
         addRecording(recording: AudioRecording) {
